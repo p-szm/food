@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>Food</title>
+  <title>Eat what you need</title>
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/style.css">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
@@ -17,14 +17,20 @@
 </head>
 
 <body>
-  <h1>Food</h1>
-  <div class='select'>
+  <div id='title-container'>
+    <h1>Eat what you need</h1>
+  </div>
+  <div class='round-container'>
     <label for="product_selector">
       Select products:
       <select multiple="multiple" id='product_selector'></select>
     </label>
+    <br>
     <button onclick='server()' id='go'>Go</button>
   </div>
+  <div class='round-container' id='result-container'>
+      <table id='t' class='center'></table>
+    </div>
   <script src="script.js"></script>
   <script type="text/javascript">
 
@@ -33,7 +39,7 @@
     allowClear: true,
     ajax: {
         type: "GET",
-        url: "http://128.141.118.216:5000/api/search",
+        url: "http://localhost:5000/api/search",
         dataType: 'json',
         delay: 250,
         data: function (params) {
@@ -61,7 +67,12 @@
     escapeMarkup: function (markup) { return markup; },
     minimumInputLength: 1,
     templateResult: function(repo) {return repo.name;},
-    templateSelection: function(repo) {return repo.name;}
+    templateSelection: function(repo) {
+      if (repo.name.length > 20) {
+        return repo.name.substring(0,20) + '...';
+      }
+      return repo.name;
+    }
   });
 
   //$('select').on('change', function (evt) {

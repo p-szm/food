@@ -1,23 +1,68 @@
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body {
 	font-family: 'Roboto', sans-serif;
+	background-color: #CCE0DC;
 }
 
 h1 {
 	text-align: center;
 	font-size: 36px;
-	margin-top: 20px;
-	margin-bottom: 20px;
+	color: #FAF9F9;
 }
 
-div.select {
+div.round-container {
 	text-align: center;
+	border: 1px solid gray;
+	border-radius: 6px;
+	width: 60%;
+	margin: 10px auto;
+	padding: 15px;
+	background-color: #FAF9F9;
+}
+
+div#result-container {
+	margin-top: 30px;
+}
+
+div#title-container {
+	background-color: #e44;
+	margin-bottom: 40px;
+	padding: 15px;
+	border: 1px solid gray;
+	background-color: #555B6E;
 }
 
 button#go {
 	width: 80px;
 	height: 30px;
+	margin: 10px auto;
+	background-color: #FAF9F9;
+	border: 1px solid black;
+	border-radius: 3px;
 }
 
 select {
 	width: 400px;
+}
+
+/*Tables*/
+
+table, th, td {
+   border: 1px solid gray;
+}
+
+th, td {
+    padding: 10px;
+}
+
+table.centre {
+	margin-left: auto; 
+    margin-right: auto;
 }
