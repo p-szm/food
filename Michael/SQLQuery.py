@@ -21,7 +21,7 @@ def config(filename='database.ini', section='postgresql'):
  
     return db
  
-def executeQuery(query, varList = None):
+def executeQuery(query, varTuple = None):
     """ Connect to the PostgreSQL database server """
     conn = None
     try:
@@ -31,20 +31,21 @@ def executeQuery(query, varList = None):
         # connect to the PostgreSQL server
         ## print('Connecting to the PostgreSQL database...')
         conn = psycopg2.connect(**params)
- 
+        conn.set_session(readonly=True)
         # create a cursor
         cur = conn.cursor()
         
  # execute a statement
-        print(varList)
-        cur.execute(query, varList)
+        # print(query)
+        # print(varTuple)
+        cur.execute(query, varTuple)
         
         # display the PostgreSQL database server version
         queryrows = cur.fetchall()
         
-        print("The number of parts: " + str(cur.rowcount))
-        for row in queryrows:
-           print(row)
+        # print("The number of parts: " + str(cur.rowcount))
+        # for row in queryrows:
+        #    print(row)
        
      # close the communication with the PostgreSQL
         conn.commit()
@@ -73,13 +74,14 @@ def getFoodNutritionByNameConstraints(foodNameConstraints = "", limit = 5):
     """
     ]
 
+    names = ['%' + name + '%' for name in names]
     if names == []:
         constraints = ""
         order_SQL = "Food_Name"
     else:    
-        constraints = ("WHERE LOWER(Food_Name) LIKE LOWER('%%s%')") + ''.join([" AND LOWER(Food_Name) LIKE LOWER('%\%s%')" for i in range(len(names) - 1)])
+        constraints = ("WHERE LOWER(Food_Name) LIKE LOWER(%s)") + ''.join([" AND LOWER(Food_Name) LIKE LOWER(%s)" for i in range(len(names) - 1)])
         order_SQL = "CHAR_LENGTH(Food_Name), Food_Name"
-        print(constraints)
+        #print(constraints)
     if limit == 0:
         limit_SQL = ""
     else:
@@ -94,7 +96,7 @@ def getFoodNutritionByID(foodID):
         WHERE Food_ID = %s
         ;
         """
-    return executeQuery(query, (foodID))
+    return executeQuery(query, tuple([foodID]))
 
 def searchFoodByText(searchText):
     if searchText is None:
