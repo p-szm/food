@@ -34,7 +34,19 @@ def api_optimiser():
     # Term that the user typed in the search bar
     data = request.args['data'] if 'data' in request.args else None
 
-    print(data)
+    response = {'a': 1}
+    resp = Response(json.dumps(response), 
+        mimetype='application/json')
+
+    # Allow X-origin
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return resp
+
+@app.route('/api/product', methods=['GET'])
+def api_product():
+    # Term that the user typed in the search bar
+    product_id = request.args['id'] if 'id' in request.args else None
 
     response = {'a': 1}
     resp = Response(json.dumps(response), 
