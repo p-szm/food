@@ -21,7 +21,7 @@ def config(filename='database.ini', section='postgresql'):
  
     return db
  
-def executeQuery(query):
+def executeQuery(query, varList = None):
     """ Connect to the PostgreSQL database server """
     conn = None
     try:
@@ -36,15 +36,15 @@ def executeQuery(query):
         cur = conn.cursor()
         
  # execute a statement
-            
-        cur.execute(query)
+        print(varList)
+        cur.execute(query, varList)
         
         # display the PostgreSQL database server version
         queryrows = cur.fetchall()
         
-        ## print("The number of parts: " + str(cur.rowcount))
-        ## for row in queryrows:
-        ##    print(row)
+        print("The number of parts: " + str(cur.rowcount))
+        for row in queryrows:
+           print(row)
        
      # close the communication with the PostgreSQL
         conn.commit()
@@ -52,6 +52,7 @@ def executeQuery(query):
         return queryrows
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
+        return None
     finally:
         if conn is not None:
             
@@ -63,7 +64,7 @@ def getFoodNutritionByNameConstraints(foodNameConstraints = "", limit = 5):
     names = foodNameConstraints.split()
     commands = [        
     """
-    SELECT *
+    SELECT Food_ID, Food_Name
     FROM nutrients 
     {0}
     ORDER BY {1}
@@ -76,24 +77,34 @@ def getFoodNutritionByNameConstraints(foodNameConstraints = "", limit = 5):
         constraints = ""
         order_SQL = "Food_Name"
     else:    
-        constraints = ("WHERE LOWER(Food_Name) LIKE LOWER('%{0}%')".format(names[0])) + ''.join([" AND LOWER(Food_Name) LIKE LOWER('%{0}%')".format(name) for name in names[1:]])
+        constraints = ("WHERE LOWER(Food_Name) LIKE LOWER('%%s%')") + ''.join([" AND LOWER(Food_Name) LIKE LOWER('%\%s%')" for i in range(len(names) - 1)])
         order_SQL = "CHAR_LENGTH(Food_Name), Food_Name"
-
+        print(constraints)
     if limit == 0:
         limit_SQL = ""
     else:
         limit_SQL = "LIMIT " + str(limit) 
 
-    return executeQuery(commands[0].format(constraints, order_SQL, limit_SQL))
+    return executeQuery(commands[0].format(constraints, order_SQL, limit_SQL), tuple(names))
 
 def getFoodNutritionByID(foodID):
     query = """
         SELECT *
         FROM nutrients 
-        WHERE Food_ID = {0}
+        WHERE Food_ID = %s
         ;
         """
-    return executeQuery(query.format(foodID))
+    return executeQuery(query, (foodID))
+
+def searchFoodByText(searchText):
+    if searchText is None:
+        rows = getFoodNutritionByNameConstraints("", 20)
+    else:
+        rows = getFoodNutritionByNameConstraints(searchText, 20)
+    if rows is None:
+        return {'total_count': 0, 'items': [{'id' : -1, 'name' : "Query Error"}]}
+    items = [{'id' : fid, 'name' : fname } for (fid,fname) in rows]
+    return {'total_count': len(rows), 'items': items} 
 
 if __name__ == '__main__':
 
@@ -105,6 +116,9 @@ if __name__ == '__main__':
         elif sys.argv[1] == "fid":
             # rows = getFoodNutritionByID("'" + querytext + "'")
             rows = getFoodNutritionByID(querytext)
+        elif sys.argv[1] == "serverFood":
+            rows = None
+            print searchFoodByName(querytext)
         else:
             rows = None
     else:
