@@ -13,6 +13,11 @@ div.select {
 	text-align: center;
 }
 
+button#go {
+	width: 80px;
+	height: 30px;
+}
+
 select {
 	width: 400px;
 }

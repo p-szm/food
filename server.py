@@ -3,7 +3,6 @@
 from flask import Flask, request, Response
 import json
 import sys
-sys.path.append('./Michael')
 import SQLQuery
 
 app = Flask(__name__)
@@ -12,8 +11,8 @@ app = Flask(__name__)
 def index():
     return "Hello, World!"
 
-@app.route('/api', methods=['GET'])
-def api():
+@app.route('/api/search', methods=['GET'])
+def api_search():
     # Term that the user typed in the search bar
     term = request.args['q'] if 'q' in request.args else None
 
@@ -30,5 +29,21 @@ def api():
 
     return resp
 
+@app.route('/api/optimiser', methods=['GET'])
+def api_optimiser():
+    # Term that the user typed in the search bar
+    data = request.args['data'] if 'data' in request.args else None
+
+    print(data)
+
+    response = {'a': 1}
+    resp = Response(json.dumps(response), 
+        mimetype='application/json')
+
+    # Allow X-origin
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return resp
+
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=False, host='0.0.0.0')

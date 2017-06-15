@@ -23,6 +23,7 @@
       Select products:
       <select multiple="multiple" id='product_selector'></select>
     </label>
+    <button onclick='server()' id='go'>Go</button>
   </div>
   <script src="script.js"></script>
   <script type="text/javascript">
@@ -32,7 +33,7 @@
     allowClear: true,
     ajax: {
         type: "GET",
-        url: "http://128.141.118.216:5000/api",
+        url: "http://128.141.118.216:5000/api/search",
         dataType: 'json',
         delay: 250,
         data: function (params) {
@@ -62,6 +63,14 @@
     templateResult: function(repo) {return repo.name;},
     templateSelection: function(repo) {return repo.name;}
   });
+
+  //$('select').on('change', function (evt) {
+  //  console.log('aaa');
+  //  console.log(evt);
+  //});
+
+  //$('select').val();
+
 </script>
 </body>
 </html>
