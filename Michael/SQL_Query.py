@@ -1,9 +1,10 @@
 #!/usr/bin/python
+import sys
 import psycopg2
 from configparser import ConfigParser
  
  
-def config(filename='database2.ini', section='postgresql'):
+def config(filename='database.ini', section='postgresql'):
     # create a parser
     parser = ConfigParser()
     # read config file
@@ -58,31 +59,32 @@ def executeQuery(query):
             ## print('Database connection closed.')
 
  
-def getFoodNutritionByNameConstraints(foodNameConstraints):
+def getFoodNutritionByNameConstraints(foodNameConstraints = "", limit = 5):
     names = foodNameConstraints.split()
+    commands = [        
+    """
+    SELECT *
+    FROM nutrients 
+    {0}
+    ORDER BY {1}
+    {2}
+    ;
+    """
+    ]
+
     if names == []:
         constraints = ""
-        commands = [        
-        """
-        SELECT *
-        FROM nutrients 
-        {0}
-        ORDER BY Food_Name
-        ;
-        """
-        ]
+        order_SQL = "Food_Name"
     else:    
         constraints = ("WHERE LOWER(Food_Name) LIKE LOWER('%{0}%')".format(names[0])) + ''.join([" AND LOWER(Food_Name) LIKE LOWER('%{0}%')".format(name) for name in names[1:]])
-        commands = [        
-        """
-        SELECT *
-        FROM nutrients 
-        {0}
-        ORDER BY CHAR_LENGTH(Food_Name), Food_Name
-        ;
-        """
-        ]
-    return executeQuery(commands[0].format(constraints))
+        order_SQL = "CHAR_LENGTH(Food_Name), Food_Name"
+
+    if limit == 0:
+        limit_SQL = ""
+    else:
+        limit_SQL = "LIMIT " + str(limit) 
+
+    return executeQuery(commands[0].format(constraints, order_SQL, limit_SQL))
 
 def getFoodNutritionByID(foodID):
     query = """
@@ -94,10 +96,23 @@ def getFoodNutritionByID(foodID):
     return executeQuery(query.format(foodID))
 
 if __name__ == '__main__':
-    rows = getFoodNutritionByNameConstraints("abc")
+
+    if len(sys.argv) > 2:
+        querytext = sys.argv[2]
+        if sys.argv[1] == "nutri":
+            limit_text = sys.argv[3]
+            rows = getFoodNutritionByNameConstraints(querytext, int(limit_text))
+        elif sys.argv[1] == "fid":
+            # rows = getFoodNutritionByID("'" + querytext + "'")
+            rows = getFoodNutritionByID(querytext)
+        else:
+            rows = None
+    else:
+        rows = getFoodNutritionByNameConstraints("chicken egg", 5)
+
     if rows is not None:
         print("Number of results: " + str(len(rows)))
-        for row in rows[:5]:
-            print(row[2])
+        for row in rows[:3]:
+            print(row)
     else:
         print("None")
