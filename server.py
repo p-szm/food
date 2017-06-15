@@ -48,7 +48,7 @@ def api_product():
     # Term that the user typed in the search bar
     product_id = request.args['id'] if 'id' in request.args else None
 
-    response = {'a': 1}
+    response = SQLQuery.searchFoodNutritionByID(product_id)
     resp = Response(json.dumps(response), 
         mimetype='application/json')
 

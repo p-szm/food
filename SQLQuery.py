@@ -60,6 +60,45 @@ def executeQuery(query, varTuple = None):
             conn.close()
             ## print('Database connection closed.')
 
+def executeQueryWithColumns(query, varTuple = None):
+    """ Connect to the PostgreSQL database server """
+    conn = None
+    try:
+        # read connection parameters
+        params = config()
+ 
+        # connect to the PostgreSQL server
+        ## print('Connecting to the PostgreSQL database...')
+        conn = psycopg2.connect(**params)
+        conn.set_session(readonly=True)
+        # create a cursor
+        cur = conn.cursor()
+        
+ # execute a statement
+        # print(query)
+        # print(varTuple)
+        cur.execute(query, varTuple)
+        
+        # display the PostgreSQL database server version
+        queryrows = cur.fetchall()
+        colnames = [desc[0] for desc in cur.description]
+        # print("The number of parts: " + str(cur.rowcount))
+        # for row in queryrows:
+        #    print(row)
+        
+     # close the communication with the PostgreSQL
+        conn.commit()
+        cur.close()
+        return [zip(colnames, row) for row in queryrows]
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        return None
+    finally:
+        if conn is not None:
+            
+            conn.close()
+            ## print('Database connection closed.')
  
 def getFoodNutritionByNameConstraints(foodNameConstraints = "", limit = 5):
     names = foodNameConstraints.split()
@@ -96,7 +135,7 @@ def getFoodNutritionByID(foodID):
         WHERE Food_ID = %s
         ;
         """
-    return executeQuery(query, tuple([foodID]))
+    return executeQueryWithColumns(query, tuple([foodID]))
 
 def searchFoodByText(searchText):
     if searchText is None:
@@ -107,6 +146,17 @@ def searchFoodByText(searchText):
         return {'total_count': 0, 'items': [{'id' : -1, 'name' : "Query Error"}]}
     items = [{'id' : fid, 'name' : fname } for (fid,fname) in rows]
     return {'total_count': len(rows), 'items': items} 
+
+def searchFoodNutritionByID(searchText):
+    if searchText is None:
+        rows = getFoodNutritionByID("")
+    else:
+        rows = getFoodNutritionByID(searchText)
+
+    if rows is None or len(rows) < 1:
+        return {}
+    return dict(rows[0])
+
 
 if __name__ == '__main__':
 
