@@ -1,0 +1,66 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Food</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+</head>
+
+<body>
+  <h1>Food</h1>
+  <div class='select'>
+    <label for="product_selector">
+      Select products:
+      <select multiple="multiple" id='product_selector'></select>
+    </label>
+  </div>
+  <script src="script.js"></script>
+  <script type="text/javascript">
+
+  $('select').select2({
+    placeholder: "Select products",
+    allowClear: true,
+    ajax: {
+        type: "GET",
+        url: "http://localhost:5000/api",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term, // search term
+            page: params.page
+          };
+        },
+        processResults: function (data, params) {
+          // parse the results into the format expected by Select2
+          // since we are using custom formatting functions we do not need to
+          // alter the remote JSON data, except to indicate that infinite
+          // scrolling can be used
+          params.page = params.page || 1;
+
+          return {
+            results: data.items,
+            pagination: {
+              more: (params.page * 30) < data.total_count
+            }
+          };
+        },
+        cache: true
+      },
+    escapeMarkup: function (markup) { return markup; },
+    minimumInputLength: 1,
+    templateResult: function(repo) {return repo.name;},
+    templateSelection: function(repo) {return repo.name;}
+  });
+</script>
+</body>
+</html>
