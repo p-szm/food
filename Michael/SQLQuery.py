@@ -118,7 +118,7 @@ if __name__ == '__main__':
             rows = getFoodNutritionByID(querytext)
         elif sys.argv[1] == "serverFood":
             rows = None
-            print searchFoodByName(querytext)
+            print(searchFoodByName(querytext))
         else:
             rows = None
     else:
