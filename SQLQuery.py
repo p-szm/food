@@ -172,7 +172,31 @@ def getFoodOrderByHighestNutrition(nutritionsOrders = "", limit = 5):
     else:
         limit_SQL = "LIMIT " + str(limit) 
 
-    return executeQuery(commands[0].format(order_SQL, limit_SQL), None)
+    return executeQueryWithColumns(commands[0].format(order_SQL, limit_SQL), None)
+
+def getFoodOrderByHighestNutritionSum(nutritionsOrders = "", limit = 5):
+    nutritions = nutritionsOrders.split()
+    commands = [        
+    """
+    SELECT *
+    FROM products 
+    ORDER BY {0}
+    {1}
+    ;
+    """
+    ]
+    if nutritions == []:
+        order_SQL = "CHAR_LENGTH(Food_Name), Food_Name"
+    else:    
+        orderStr = "( " + nutritions[0] + ''.join([" + {0}".format(nutrition) for nutrition in nutritions[1:]]) + " ) DESC,"
+        order_SQL = orderStr + "CHAR_LENGTH(Food_Name), Food_Name"
+        #print(constraints)
+    if limit == 0:
+        limit_SQL = ""
+    else:
+        limit_SQL = "LIMIT " + str(limit) 
+
+    return executeQueryWithColumns(commands[0].format(order_SQL, limit_SQL), None)
 
 def getNutritionMinMax():
     query = """
@@ -225,8 +249,14 @@ def searchFoodOrderByHighestNutrition(nutritions, limit):
             valid = False
     return getFoodOrderByHighestNutrition(nutritions, limit)
 
-
-
+def searchFoodOrderByHighestNutritionSum(nutritions, limit):
+    nutritionsSplit = nutritions.split()
+    valid = True
+    for nutrition in nutritionsSplit:
+        if not re.match("^[A-Za-z][0-9A-Za-z_]*$", nutrition):
+            print ("Not Valid:" + nutrition)
+            valid = False
+    return getFoodOrderByHighestNutritionSum(nutritions, limit)
 
 if __name__ == '__main__':
 
@@ -247,7 +277,9 @@ if __name__ == '__main__':
         elif sys.argv[1] == "nutSort":
             limit_text = sys.argv[3]
             rows = searchFoodOrderByHighestNutrition(querytext, int(limit_text))
-        
+        elif sys.argv[1] == "nutSumSort":
+            limit_text = sys.argv[3]
+            rows = searchFoodOrderByHighestNutritionSum(querytext, int(limit_text))
         else:
             rows = None
     elif len(sys.argv) > 1:
