@@ -1,0 +1,37 @@
+create table nutrients(
+name text,
+min_intake real,
+max_intake real,
+primary key( name )
+);
+
+
+INSERT INTO nutrients (name, min_intake, max_intake)
+VALUES
+('protein_g', 60, 225),
+('available_carbohydrates_with_sugar_alcohols_g', 50, 300),
+('added_sugars_g', -1, 130),
+('dietary_fibre_g', 25, -1),
+('provitamin_A_b_carotene_equivalents_ug', 700, 3000),
+('thiamin_B1_mg', 1.1, -1),
+('vitamin_C_mg', 50, 2000),
+('riboflavin_B2_mg', 1.1, -1),
+('vitamin_B6_mg', 1.2, 150),
+('vitamin_E_mg', 10, 800),
+('niacin_B3_mg', 14, 35),
+('calcium_Ca_mg', 800, 25000),
+('iodine_I_ug', 120, 1100),
+('dietary_folate_equivalents_ug', 360, 1000),
+('iron_Fe_mg', 7, 45),
+('magnesium_Mg_mg', 400, -1),
+('phosphorus_P_mg', 500, 4000),
+('potassium_K_mg', 3500, 7200),
+('selenium_Se_ug', 50, 420),
+('sodium_mg', 50, 2300),
+('zinc_mg', 9, 40),
+('cholesterol_mg', -1, 300),
+('total_saturated_fat_g', -1, 30),
+('total_monounsaturated_fat_g', 15, 60),
+('total_polyunsaturated_fat_g', 15, 60),
+('total_long_chain_omega_3_fatty_acids_mg', 160, 550)
+;
