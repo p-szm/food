@@ -106,7 +106,7 @@ def getFoodNutritionByNameConstraints(foodNameConstraints = "", limit = 5):
     commands = [        
     """
     SELECT Food_ID, Food_Name
-    FROM nutrients 
+    FROM products 
     {0}
     ORDER BY {1}
     {2}
@@ -132,7 +132,7 @@ def getFoodNutritionByNameConstraints(foodNameConstraints = "", limit = 5):
 def getFoodNutritionByID(foodID):
     query = """
         SELECT *
-        FROM nutrients 
+        FROM products 
         WHERE Food_ID = %s
         ;
         """
@@ -143,7 +143,7 @@ def getFoodOrderByHighestNutrition(nutritionsOrders = "", limit = 5):
     commands = [        
     """
     SELECT *
-    FROM nutrients 
+    FROM products 
     ORDER BY {0}
     {1}
     ;

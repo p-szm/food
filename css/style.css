@@ -17,8 +17,11 @@ h1 {
 	color: #FAF9F9;
 }
 
-div.round-container {
+div.center {
 	text-align: center;
+}
+
+div.round-container {
 	border: 1px solid gray;
 	border-radius: 6px;
 	width: 60%;
@@ -43,8 +46,8 @@ button#go {
 	width: 80px;
 	height: 30px;
 	margin: 10px auto;
-	background-color: #FAF9F9;
-	border: 1px solid black;
+	background-color: white;
+	border: 1px solid gray;
 	border-radius: 3px;
 }
 
@@ -53,6 +56,10 @@ select {
 }
 
 /*Tables*/
+
+table {
+	margin: 15px auto;
+}
 
 table, th, td {
    border: 1px solid gray;

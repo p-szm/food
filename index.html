@@ -21,67 +21,18 @@
     <h1>Eat what you need</h1>
   </div>
   <div class='round-container'>
-    <label for="product_selector">
-      Select products:
-      <select multiple="multiple" id='product_selector'></select>
-    </label>
+    <div class='center'>
+      <label for="product_selector">
+        Select products:
+        <select multiple="multiple" id='product_selector'></select>
+      </label>
+    </div>
     <br>
-    <button onclick='server()' id='go'>Go</button>
+    <div class='center'><button onclick='server()' id='go'>Go</button></div>
   </div>
   <div class='round-container' id='result-container'>
       <table id='t' class='center'></table>
     </div>
   <script src="script.js"></script>
-  <script type="text/javascript">
-
-  $('select').select2({
-    placeholder: "Select products",
-    allowClear: true,
-    ajax: {
-        type: "GET",
-        url: "http://localhost:5000/api/search",
-        dataType: 'json',
-        delay: 250,
-        data: function (params) {
-          return {
-            q: params.term, // search term
-            page: params.page
-          };
-        },
-        processResults: function (data, params) {
-          // parse the results into the format expected by Select2
-          // since we are using custom formatting functions we do not need to
-          // alter the remote JSON data, except to indicate that infinite
-          // scrolling can be used
-          params.page = params.page || 1;
-
-          return {
-            results: data.items,
-            pagination: {
-              more: (params.page * 30) < data.total_count
-            }
-          };
-        },
-        cache: true
-      },
-    escapeMarkup: function (markup) { return markup; },
-    minimumInputLength: 1,
-    templateResult: function(repo) {return repo.name;},
-    templateSelection: function(repo) {
-      if (repo.name.length > 20) {
-        return repo.name.substring(0,20) + '...';
-      }
-      return repo.name;
-    }
-  });
-
-  //$('select').on('change', function (evt) {
-  //  console.log('aaa');
-  //  console.log(evt);
-  //});
-
-  //$('select').val();
-
-</script>
 </body>
 </html>

@@ -38,7 +38,7 @@ function addAllColumnHeaders(response, selector) {
 function server(data) {
     $.ajax({
     	dataType: "json",
-    	url: "http://localhost:5000/api/optimiser",
+    	url: "http://128.141.118.31:5000/api/optimiser",
     	data: {data: $('select').val().join()},
     	success: success
 	});
@@ -51,9 +51,51 @@ function success(data) {
 	$('div#result-container').html('');
 
 	if (data.valid) {
+		$('div#result-container').html('Here is the list of the product and optimal quantities:');
 		buildHtmlTable(data, 'div#result-container');
 	}
 	else {
-		
+
 	}
 };
+
+$('select').select2({
+    placeholder: "Select products",
+    allowClear: true,
+    ajax: {
+        type: "GET",
+        url: "http://128.141.118.31:5000/api/search",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term, // search term
+            page: params.page
+          };
+        },
+        processResults: function (data, params) {
+          // parse the results into the format expected by Select2
+          // since we are using custom formatting functions we do not need to
+          // alter the remote JSON data, except to indicate that infinite
+          // scrolling can be used
+          params.page = params.page || 1;
+
+          return {
+            results: data.items,
+            pagination: {
+              more: (params.page * 30) < data.total_count
+            }
+          };
+        },
+        cache: true
+      },
+    escapeMarkup: function (markup) { return markup; },
+    minimumInputLength: 1,
+    templateResult: function(repo) {return repo.name;},
+    templateSelection: function(repo) {
+      if (repo.name.length > 20) {
+        return repo.name.substring(0,20) + '...';
+      }
+      return repo.name;
+    }
+  });

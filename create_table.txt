@@ -1,4 +1,4 @@
-create table nutrients(
+create table products(
 Food_ID text,
 Survey_ID text,
 Food_Name text,
