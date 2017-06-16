@@ -138,6 +138,18 @@ def getFoodNutritionByID(foodID):
         """
     return executeQueryWithColumns(query, tuple([foodID]))
 
+def getMultipleFoodNutritionByID(foodIDListStr):
+    foodIDList = foodIDListStr.split(',')
+    idConstraints = "( %s" + ''.join([", %s " for i in range(len(foodIDList) - 1)]) + ")"
+    query = """
+        SELECT *
+        FROM products 
+        WHERE Food_ID IN {0}
+        ;
+    """
+
+    return executeQueryWithColumns(query.format(idConstraints), tuple(foodIDList))
+
 def getFoodOrderByHighestNutrition(nutritionsOrders = "", limit = 5):
     nutritions = nutritionsOrders.split()
     commands = [        
@@ -162,6 +174,17 @@ def getFoodOrderByHighestNutrition(nutritionsOrders = "", limit = 5):
 
     return executeQuery(commands[0].format(order_SQL, limit_SQL), None)
 
+def getNutritionMinMax():
+    query = """
+    SELECT *
+    FROM nutrients 
+    ;
+    """
+    rows = executeQuery(query, None)
+    if rows is None or len(rows) < 1:
+        return {}
+    rows = [(x,(y,z)) for (x,y,z) in rows]
+    return dict(rows)
 
 def searchFoodByText(searchText):
     if searchText is None:
@@ -183,6 +206,16 @@ def searchFoodNutritionByID(searchText):
         return {}
     return dict(rows[0])
 
+def searchMultipleFoodNutritionByID(searchText):
+    if searchText is None:
+        rows = getMultipleFoodNutritionByID("")
+    else:
+        rows = getMultipleFoodNutritionByID(searchText)
+
+    if rows is None or len(rows) < 1:
+        return {}
+    return [dict(row) for row in rows]
+
 def searchFoodOrderByHighestNutrition(nutritions, limit):
     nutritionsSplit = nutritions.split()
     valid = True
@@ -193,7 +226,10 @@ def searchFoodOrderByHighestNutrition(nutritions, limit):
     return getFoodOrderByHighestNutrition(nutritions, limit)
 
 
+
+
 if __name__ == '__main__':
+
 
     if len(sys.argv) > 2:
         querytext = sys.argv[2]
@@ -203,13 +239,20 @@ if __name__ == '__main__':
         elif sys.argv[1] == "fid":
             # rows = getFoodNutritionByID("'" + querytext + "'")
             rows = getFoodNutritionByID(querytext)
+        elif sys.argv[1] == "mfid":
+            rows = searchMultipleFoodNutritionByID(querytext)
         elif sys.argv[1] == "serverFood":
             rows = None
             print(searchFoodByName(querytext))
         elif sys.argv[1] == "nutSort":
             limit_text = sys.argv[3]
             rows = searchFoodOrderByHighestNutrition(querytext, int(limit_text))
+        
         else:
+            rows = None
+    elif len(sys.argv) > 1:
+        if sys.argv[1] == "nutriMinMax":
+            print (getNutritionMinMax())
             rows = None
     else:
         rows = getFoodNutritionByNameConstraints("chicken egg", 5)
