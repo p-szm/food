@@ -176,7 +176,7 @@ def getFoodOrderByHighestNutrition(nutritionsOrders = "", limit = 5):
 
 def getNutritionMinMax():
     query = """
-    SELECT *
+    SELECT LOWER(name), min_intake, max_intake
     FROM nutrients 
     ;
     """
