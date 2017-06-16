@@ -247,7 +247,10 @@ def searchFoodOrderByHighestNutrition(nutritions, limit):
         if not re.match("^[A-Za-z][0-9A-Za-z_]*$", nutrition):
             print ("Not Valid:" + nutrition)
             valid = False
-    return getFoodOrderByHighestNutrition(nutritions, limit)
+    rows = getFoodOrderByHighestNutrition(nutritions, limit)
+    if rows is None or len(rows) < 1:
+        return {}
+    return [dict(row) for row in rows]
 
 def searchFoodOrderByHighestNutritionSum(nutritions, limit):
     nutritionsSplit = nutritions.split()
