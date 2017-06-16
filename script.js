@@ -39,7 +39,7 @@ function server(data) {
     $.ajax({
     	dataType: "json",
     	url: "http://128.141.118.31:5000/api/optimiser",
-    	data: {products: $('select').val().join(), 
+    	data: {data: $('select').val().join(), 
     			calories_min: parseInt($('input#min_calories').val()), 
     			calories_max: parseInt($('input#max_calories').val())},
     	success: success
