@@ -66,7 +66,7 @@ def api_nutrient():
     # Term that the user typed in the search bar
     nutrient = request.args['data'] if 'data' in request.args else None
 
-    response = SQLQuery.searchFoodOrderByHighestNutrition(nutrient, 3);
+    response = SQLQuery.searchFoodOrderByHighestNutrition(nutrient, 5);
     resp = Response(json.dumps(response), 
         mimetype='application/json')
 

@@ -83,7 +83,17 @@ table.centre {
     margin-right: auto;
 }
 
-ul {
-    list-style-type: circle;
-    padding-left: 30px;
+ul.mainlist {
+    list-style-type: disc;
+    padding-left: 40px;
 }
+
+ul.sublist {
+    list-style-type: circle;
+    padding-left: 40px;
+}
+
+.bold {
+	font-weight: bold;
+}
+

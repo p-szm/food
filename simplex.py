@@ -76,7 +76,7 @@ def findMinMass(foodIdL):
   if nutriSum[nutri] == 0:
    missingNutri.append(nutri)
  if missingNutri != []:
-  return {"status": 4, "missing nutrients": missingNutri}
+  return {"status": 4, "missing nutrients": missingNutri, "products": [SQLQuery.searchFoodOrderByHighestNutrition(n, 5) for n in missingNutri]}
  
  ## optimisation
  
@@ -94,24 +94,18 @@ def findMinMass(foodIdL):
  # lower & upper bounds
  b_ub = [-nutritionMinMaxD[i][0] for i in nutriL] #+ [nutritionMinMaxD[i][1] for i in nutriL]
  
- #print(A_ub)
- #print(b_ub)
- #print(c)
+ print(A_ub)
+ print(b_ub)
+ print(c)
  
  # simplex
- res = linprog(c, A_ub=A_ub, b_ub=b_ub, options={"disp": False})
+ res = linprog(c=c, A_ub=A_ub, b_ub=b_ub, options={"disp": False, "bland": True, "tol": 10e-8})
  
  if res.status==2:
   return {"status": res.status,"missing nutrient names": []}
  
  result = {"status": res.status, "items": [{"id": foodIdL[i],"name":  foodNutritionById[foodIdL[i]]["food_name"], "amount": res.x[i]} for i in range(len(foodIdL))]}
  return result
-
-
-
-
-
-
 
 
 

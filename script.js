@@ -1,3 +1,7 @@
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 function buildHtmlTable(response, selector) {
 
   $(selector).append($('<table/>'));
@@ -8,8 +12,12 @@ function buildHtmlTable(response, selector) {
 
   for (var i = 0; i < response.items.length; i++) {
     var row$ = $('<tr/>');
+
     for (var colIndex = 0; colIndex < columns.length; colIndex++) {
       var cellValue = response.items[i][columns[colIndex]];
+      if (isNumeric(cellValue)) {
+      	cellValue = (100 * cellValue).toFixed(2).toString() + ' g';
+      }
       if (cellValue == null) cellValue = "";
       row$.append($('<td/>').html(cellValue));
     }
@@ -46,6 +54,19 @@ function server(data) {
 	});
 }
 
+function get_nutritious_products(nutrient) {
+	$.ajax({
+    	dataType: "json",
+    	url: "http://128.141.118.31:5000/api/nutrient",
+    	data: {data: nutrient},
+    	success: success_nutrient
+	});
+}
+
+function success_nutrient(data) {
+	console.log(data);
+}
+
 function success(data) {
 	console.log(data);
 
@@ -66,9 +87,14 @@ function success(data) {
 		$('div#result-container').html('Unbounded problem');
 	}
 	else if (data.status == 4) {
-		$('div#result-container').html('Missing nutrients:');
+		$('div#result-container').html('Missing nutrients:<br><br>');
 		var missing = data['missing nutrients'];
-		var list = '<ul class="myList"><li class="ui-menu-item" role="menuitem"><a class="ui-all" tabindex="-1">' + missing.join('</a></li><li>') + '</li></ul>';
+		for (var i = 0; i < missing.length; i++) {
+			var prods = data['products'][i].map(function(a) {return a.food_name;});
+			var sublist = '<ul class="sublist"><li class="ui-menu-item" role="menuitem"><a class="ui-all" tabindex="-1">' + prods.join('</a></li><li>') + '</li></ul>';
+			missing[i] = '<span class="bold">' + missing[i] + '</span>' + sublist;
+		}
+		var list = '<ul class="mainlist"><li class="ui-menu-item" role="menuitem"><a class="ui-all" tabindex="-1">' + missing.join('</a></li><li>') + '</li></ul>';
 		$('div#result-container').append(list);
 	}
 };
