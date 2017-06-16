@@ -4,6 +4,7 @@ from flask import Flask, request, Response
 import json
 import sys
 import SQLQuery
+import simplex
 
 app = Flask(__name__)
 
@@ -34,7 +35,9 @@ def api_optimiser():
     # Term that the user typed in the search bar
     data = request.args['data'] if 'data' in request.args else None
 
-    response = {'valid': True, 'items': [{'id': '123', 'name': 'salad', 'calories': 34, 'fibre': 12, 'iron': 3, 'amount': 0.5}]}
+    foodIDList = data.split(',')
+    response = findMinMass(foodIDList)
+    #response = {'valid': True, 'items': [{'id': '123', 'name': 'salad', 'calories': 34, 'fibre': 12, 'iron': 3, 'amount': 0.5}]}
     resp = Response(json.dumps(response), 
         mimetype='application/json')
 
