@@ -8,7 +8,7 @@ html {
 
 body {
 	font-family: 'Roboto', sans-serif;
-	background-color: #CCE0DC;
+	background-color: #F4F1E6;
 }
 
 h1 {
@@ -38,8 +38,7 @@ div#title-container {
 	background-color: #e44;
 	margin-bottom: 40px;
 	padding: 15px;
-	border: 1px solid gray;
-	background-color: #555B6E;
+	background-color: #588157;
 }
 
 button#go {
@@ -52,7 +51,7 @@ button#go {
 }
 
 select {
-	width: 400px;
+	width: 450px;
 	margin: 10px 10px;
 }
 
@@ -82,4 +81,9 @@ th, td {
 table.centre {
 	margin-left: auto; 
     margin-right: auto;
+}
+
+ul {
+    list-style-type: circle;
+    padding-left: 30px;
 }

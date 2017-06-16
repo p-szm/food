@@ -34,9 +34,10 @@ def api_search():
 def api_optimiser():
     # Term that the user typed in the search bar
     data = request.args['data'] if 'data' in request.args else None
-
     foodIDList = data.split(',')
-    response = findMinMass(foodIDList)
+
+    response = simplex.findMinMass(foodIDList)
+
     #response = {'valid': True, 'items': [{'id': '123', 'name': 'salad', 'calories': 34, 'fibre': 12, 'iron': 3, 'amount': 0.5}]}
     resp = Response(json.dumps(response), 
         mimetype='application/json')
@@ -52,6 +53,20 @@ def api_product():
     product_id = request.args['id'] if 'id' in request.args else None
 
     response = SQLQuery.searchFoodNutritionByID(product_id)
+    resp = Response(json.dumps(response), 
+        mimetype='application/json')
+
+    # Allow X-origin
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+
+    return 
+
+@app.route('/api/nutrient', methods=['GET'])
+def api_nutrient():
+    # Term that the user typed in the search bar
+    nutrient = request.args['data'] if 'data' in request.args else None
+
+    response = SQLQuery.searchFoodOrderByHighestNutrition(nutrient, 3);
     resp = Response(json.dumps(response), 
         mimetype='application/json')
 

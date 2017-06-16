@@ -45,16 +45,40 @@ def findMinMass(foodIdL):
  # optimise the mass of the ingredients and find a subset of those
  # that satisfy the recommended daily intake
  # [return subset of foods + amount of each of them + total mass(?)]
- # return a dict of food amounts
+ # return a dict: status, food amounts
  from scipy.optimize import linprog
  
  # access databases
- foodNutritionById = dict([(food, SQLQuery.searchFoodNutritionByID(food)) for food in foodIdL])
+ foodNutritionById = dict([(food,SQLQuery.searchFoodNutritionByID(food)) for food in foodIdL])
  nutritionMinMaxD = SQLQuery.getNutritionMinMax()
- # fix the order of nutrients
+ 
+ # check if keys are the same
+ # if foodNutritionById[].keys() != nutritionMinMaxD.keys():
+ #  print("The names of nutrients aren't the same in the 2 DBs! Exit.")
+ #  print(.symmetric_difference(nutritionMinMaxD.keys()))
+ 
+ # set the order of nutrients
  nutriL = [key for key in nutritionMinMaxD]
  
- # check if keys are the same?
+ 
+ ## find missing nutrients
+ missingNutri = []
+ # add up a unit amount of each ingredient
+ # nutriSum: {"fat": 0, "carb": 1}
+ nutriSum = {}
+ for nutri in nutriL:
+  nutriSum[nutri] = 0
+ for food in foodIdL:
+  for nutri in nutriL:
+   nutriSum[nutri] += foodNutritionById[food][nutri]
+ # check
+ for nutri in nutriL: # name of nutrients
+  if nutriSum[nutri] == 0:
+   missingNutri.append(nutri)
+ if missingNutri != []:
+  return {"status": 4, "missing nutrients": missingNutri}
+ 
+ ## optimisation
  
  # all-ones cost function, ie kinda minimizing mass
  c = [1 for i in range(len(foodIdL))]
@@ -62,20 +86,34 @@ def findMinMass(foodIdL):
  # encode min & max daily intake as nutrient constraints
  # min is -a1.x1 <= -b1 (b1 <= a1.x1)
  # max is  A1.x1 <=  B1
- minA = [[-foodNutritionById[food][i] for i in nutriL] for food in foodIdL]
- maxA = [[foodNutritionById[food][i] for i in nutriL] for food in foodIdL]
+ minA = [[-foodNutritionById[food][nutri] for nutri in nutriL] for food in foodIdL]
+ #maxA = [[foodNutritionById[food][nutri] for nutri in nutriL] for food in foodIdL]
  
- A_ub = [list(x) for x in zip(*minA)]+[list(x) for x in zip(*maxA)]   # transpose
+ A_ub = [list(x) for x in zip(*minA)]#+[list(x) for x in zip(*maxA)]   # transpose
  
  # lower & upper bounds
- b_ub = [-nutritionMinMaxD[i][0] for i in nutriL] + [nutritionMinMaxD[i][1] for i in nutriL]
+ b_ub = [-nutritionMinMaxD[i][0] for i in nutriL] #+ [nutritionMinMaxD[i][1] for i in nutriL]
  
- # print(c,A_ub,b_ub)
+ #print(A_ub)
+ #print(b_ub)
+ #print(c)
  
  # simplex
- res = linprog(c, A_ub, b_ub, options={"disp": False})
+ res = linprog(c, A_ub=A_ub, b_ub=b_ub, options={"disp": False})
  
- return res.x
+ if res.status==2:
+  return {"status": res.status,"missing nutrient names": []}
+ 
+ result = {"status": res.status, "items": [{"id": foodIdL[i],"name":  foodNutritionById[foodIdL[i]]["food_name"], "amount": res.x[i]} for i in range(len(foodIdL))]}
+ return result
+
+
+
+
+
+
+
+
 
 
 def myMain():

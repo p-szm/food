@@ -52,12 +52,24 @@ function success(data) {
 	// Clear the results container
 	$('div#result-container').html('');
 
-	if (data.valid) {
+	if (data.status == 0) {
 		$('div#result-container').html('Here is the list of the product and optimal quantities:');
 		buildHtmlTable(data, 'div#result-container');
 	}
-	else {
-
+	else if (data.status == 1) {
+		$('div#result-container').html('Max number of iterations reached');
+	}
+	else if (data.status == 2) {
+		$('div#result-container').html('The problem is too constrained');
+	}
+	else if (data.status == 3) {
+		$('div#result-container').html('Unbounded problem');
+	}
+	else if (data.status == 4) {
+		$('div#result-container').html('Missing nutrients:');
+		var missing = data['missing nutrients'];
+		var list = '<ul class="myList"><li class="ui-menu-item" role="menuitem"><a class="ui-all" tabindex="-1">' + missing.join('</a></li><li>') + '</li></ul>';
+		$('div#result-container').append(list);
 	}
 };
 
